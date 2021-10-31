@@ -16,12 +16,14 @@ public class App {
 	ArrayList<Article> articles = new ArrayList<>();
 	ArrayList<Member> members = new ArrayList<>();
 	ArrayList<Reply> replies = new ArrayList<>();
+	ArrayList<Like> likes = new ArrayList<>();
 	
 	int articleNo = 1;
 	Member loginedUser = null; // 로그인한 유저
 	
 	// 메서드 선언
 	public void run() {
+		loginedUser = new GeneralMember("hong123", "h1234", "홍길동");
 		makeTestData();
 
 		while (true) {
@@ -141,17 +143,7 @@ public class App {
 		if(index != -1) {
 			Article a = articles.get(index);
 			
-			System.out.println("==== " + a.no +"번 게시물 ====");
-			System.out.println("번호 : " + a.no);
-			System.out.println("제목 : " + a.title);
-			System.out.println("-------------------");
-			System.out.println("내용 : " + a.body);
-			System.out.println("-------------------");
-			System.out.println("작성자 : 익명");
-			System.out.println("등록날짜: " + a.regDate);
-			System.out.println("좋아요 수: " + a.like_it);
-			System.out.println("===================");		
-			
+			printArticleByNo(a);
 			// 상세보기 기능
 			readProcess(a);						
 			
@@ -159,6 +151,41 @@ public class App {
 			System.out.println("없는 게시물입니다.");
 		}
 
+	}
+	
+	private void printArticleByNo(Article a) {
+		int likecount = 0;
+		for(int i =0; i < likes.size(); i++) {
+			Like like = likes.get(i);
+					
+					if(like.getArticleNo() == a.getNo()) {
+						likecount +=1;
+					}
+		}
+		
+		
+		System.out.println("==== " + a.getNo() +"번 게시물 ====");
+		System.out.println("번호 : " + a.getNo());
+		System.out.println("제목 : " + a.getTitle());
+		System.out.println("-------------------");
+		System.out.println("내용 : " + a.getBody());
+		System.out.println("-------------------");
+		System.out.println("작성자 : " + a.getWriter());
+		System.out.println("등록날짜: " + a.getRegDate());
+		System.out.println("좋아요 수: " + likecount);
+		System.out.println("===================");
+		System.out.println("======== 댓글 =======");
+		for(int i = 0; i < replies.size(); i++) {
+			Reply r = replies.get(i);
+			
+			if(r.getParentNo() == a.getNo()) {
+				System.out.println("내용 : " + r.getrBody());
+				System.out.println("작성자 : " + r.getWriter());
+				System.out.println("작성일 : " + r.getRegDate());
+				System.out.println("=======================");
+			}
+		}
+		
 	}
 
 	private void readProcess(Article a) {
@@ -176,49 +203,76 @@ public class App {
 				// 작성일
 				String regDate = getCurrentData();
 				// 어떤 게시물의 댓글?
-				int parentNo = a.no;
+				int parentNo = a.getNo();
 				
 				Reply reply = new Reply(parentNo, replyBody, writer, regDate);
 				replies.add(reply);
 				
 				System.out.println("댓글이 등록되었습니다.");
 				
-				System.out.println("==== " + a.no +"번 게시물 ====");
-				System.out.println("번호 : " + a.no);
-				System.out.println("제목 : " + a.title);
-				System.out.println("-------------------");
-				System.out.println("내용 : " + a.body);
-				System.out.println("-------------------");
-				System.out.println("작성자 : 익명");
-				System.out.println("등록날짜: " + a.regDate);
-				System.out.println("좋아요 수: " + a.like_it);
-				System.out.println("===================");
-				System.out.println("======== 댓글 =======");
-				for(int i = 0; i < replies.size(); i++) {
-					Reply r = replies.get(i);
-					System.out.println("내용 : " + r.getrBody());
-					System.out.println("작성자 : " + r.getWriter());
-					System.out.println("작성일 : " + r.getRegDate());
-					System.out.println("=======================");
-				}
-				
+				printArticleByNo(a);				
 				
 			} else if(rcmd == 2) {
 				//로그인한 유저가 해당 게시물에 좋아요 체크했는지 따진다.
-				if() {
+				String loginId = loginedUser.getLoginId();
+				int articleNo = a.getNo();
+				int targetIndex = -1;
+				
+				for(int i =0; i < likes.size(); i++) {
+					Like like = likes.get(i);
+							
+							if(like.getArticleNo() == articleNo && like.getUserId() == loginId) {
+								targetIndex = i;
+								break;
+							}
+				}
+				
+				
+				if(targetIndex == -1) {
 					System.out.println("[해당 게시물을 좋아합니다.]");
-					a.like_it +=1;
+					Like like = new Like(loginedUser.getLoginId(), a.getNo(), getCurrentData());
+					likes.add(like);
+					printArticleByNo(a);	
 					
 				}
 				else {
 					System.out.println("[해당 게시물을 좋아요를 해제합니다.]");
+					likes.remove(targetIndex);
+					printArticleByNo(a);	
 					
 				}
 				
 			} else if(rcmd == 3) {
-				System.out.println("[수정]");
+				int no = a.getNo();
+				int index = getIndexByAritlceNo(no);
+				if (index != -1) {
+					System.out.print("새제목 : ");
+					String title = sc.nextLine();
+					System.out.print("새내용 : ");
+					String body = sc.nextLine();
+					
+					a.setTitle(title);
+					a.setBody(body);
+
+					articles.set(index, a);
+
+				} else {
+					System.out.println("없는 게시물입니다.");
+				}
+
+				printArticleByNo(a);	
+				
 			} else if(rcmd == 4) {
-				System.out.println("[삭제]");
+				int no = a.getNo();
+				int index = getIndexByAritlceNo(no);
+
+				if (index != -1) {
+					articles.remove(index);
+				} else {
+					System.out.println("없는 게시물입니다.");
+				}
+				System.out.println("게시물이 삭제되었습니다. 화면으로 돌아갑니다.");
+				break;
 			} else if(rcmd == 5) {
 				break;
 			}
@@ -240,7 +294,7 @@ public class App {
 		// 번호로 찾기
 		for (int i = 0; i < articles.size(); i++) {
 			Article a = articles.get(i);
-			if (a.title.contains(keyword)) {
+			if (a.getTitle().contains(keyword)) {
 				searchedList.add(a);
 			}
 		}
@@ -258,7 +312,7 @@ public class App {
 
 			Article a = articles.get(i);
 
-			if (no == a.no) {
+			if (no == a.getNo()) {
 				index = i;
 				break;
 			}
@@ -296,8 +350,8 @@ public class App {
 			String body = sc.nextLine();
 
 			Article a = articles.get(index);
-			a.title = title;
-			a.body = body;
+			a.setTitle(title);
+			a.setBody(body);
 
 			articles.set(index, a);
 
@@ -312,10 +366,10 @@ public class App {
 
 		for (int i = 0; i < articleList.size(); i++) {
 			Article a = articleList.get(i);
-			System.out.println("번호 : " + a.no);
-			System.out.println("제목 : " + a.title);
-			System.out.println("작성자 : " + a.writer);
-			System.out.println("작성일 : " + a.regDate);
+			System.out.println("번호 : " + a.getNo());
+			System.out.println("제목 : " + a.getTitle());
+			System.out.println("작성자 : " + a.getWriter());
+			System.out.println("작성일 : " + a.getRegDate());
 			System.out.println("조회수 : " + 0);
 			System.out.println("===============");
 		}
@@ -334,8 +388,7 @@ public class App {
 		// 현재 시간 구해서 등록.
 		// 현재 날짜 구하기 (시스템 시계, 시스템 타임존)
 		String regDate = getCurrentData();
-		int like_it = 0;
-		Article a = new Article(articleNo, title, loginedUser.getNickname(), body, regDate, like_it);
+		Article a = new Article(articleNo, title, loginedUser.getNickname(), body, regDate);
 		articles.add(a);
 
 		System.out.println("게시물이 등록되었습니다.");
@@ -362,10 +415,9 @@ public class App {
 	}
 
 	public void setTestData(String title, String body) {
-		int like_it = 0;
 
 		String regDate = getCurrentData();
-		Article a = new Article(articleNo, title, "홍길동", body, regDate, like_it);
+		Article a = new Article(articleNo, title, "홍길동", body, regDate);
 
 		articles.add(a);
 		System.out.println("게시물이 등록되었습니다.");

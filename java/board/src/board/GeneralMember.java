@@ -10,7 +10,7 @@ public class GeneralMember extends Member {
 	}
 	
 	public void welcome() {
-		System.out.println("안녕하세요 일반회원 " + this.nickname + "님");
+		System.out.println("안녕하세요 일반회원 " + this.nickname + "�떂");
 	}
 	
 }
