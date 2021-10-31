@@ -26,7 +26,12 @@
 8. 원격 저장소에 소스코드 밀어넣기
  - git push 원격저장소주소 master
 
-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
+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
 
+9. 새로운 컴퓨터에서 소스코드 가져오기
+ - 프로젝트 폴더 만들기
+ - git init 으로 git 저장소 만들고
+ - 유저 등록 (4번 과정)
+ - git pull 원격저장소주소 만들기
 
 스택오버플로우
