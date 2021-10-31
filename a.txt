@@ -4,3 +4,18 @@
 2. git 상태보기
  -> git status
 
+3. 인덱스에 추가
+ -> git add 파일명
+
+4. 유저등록
+ -> github.com 가입
+ -> github 유저 정보 등록
+   -> git config --local user.name "github닉네임"
+   -> git config --local user.email "github이메일"
+
+5. 커밋
+ - git commit -m "작업 메세지"
+
+
+
+스택오버플로우
