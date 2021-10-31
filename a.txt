@@ -34,4 +34,7 @@ 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
  - 유저 등록 (4번 과정)
  - git pull 원격저장소주소 만들기
 
+
+10. 한번에 추가하는법.
+ - git add . 
 스택오버플로우
