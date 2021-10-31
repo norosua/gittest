@@ -1,0 +1,6 @@
+1. git 저장소 만들기
+ -> git init 명령어
+
+2. git 상태보기
+ -> git status
+
